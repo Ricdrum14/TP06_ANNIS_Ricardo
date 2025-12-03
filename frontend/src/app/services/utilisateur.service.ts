@@ -165,7 +165,6 @@ deleteUtilisateur(id: number): Observable<any> {
       tap(user => {
         this.saveUserToLocalStorage(user);
         this.currentUserSubject.next(user);
-        alert(`👋 Bienvenue ${user.prenom}`);
       }),
       catchError(error => this.handleError(error, 'Erreur lors de la connexion (API).'))
     );
@@ -175,7 +174,6 @@ deleteUtilisateur(id: number): Observable<any> {
   logout() {
     this.clearLocalStorage();
     this.currentUserSubject.next(null);
-    alert('👋 Déconnexion réussie');
   }
 
   /** 👤 Récupère l’utilisateur courant */

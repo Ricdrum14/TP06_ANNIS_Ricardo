@@ -1,9 +1,13 @@
-import { Component, Input, OnInit, OnChanges, SimpleChanges, OnDestroy } from '@angular/core';
+import { Component, Input, OnInit, OnChanges, SimpleChanges, OnDestroy, inject, Signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PollutionService } from '../../../services/pollution.service';
 import { Pollution } from '../../../models/pollution';
 import { Observable, map, Subject} from 'rxjs';
+import { Store } from '@ngxs/store';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { PollutionsDetailsComponent } from '../../pollutions-details/pollutions-details.component';
+import { AddFavorite, RemoveFavorite } from '../../../../actions/favorite-actions';
+import { FavoriteState } from '../../../../shared/states/favorite-states';
 
 @Component({
   selector: 'app-pollutions-list',
@@ -25,6 +29,13 @@ export class PollutionsListComponent implements OnInit, OnChanges, OnDestroy {
   maxVisible = 4; // limite par défaut
 
   private destroy$ = new Subject<void>();
+  private store = inject(Store);
+
+  // 🔴 Signal pour les favoris
+  favorites: Signal<Pollution[]> = toSignal(
+    this.store.select(FavoriteState.getFavorites),
+    { initialValue: [] }
+  );
 
   constructor(private pollutionService: PollutionService) {}
 
@@ -79,6 +90,35 @@ export class PollutionsListComponent implements OnInit, OnChanges, OnDestroy {
 
   toggleView() {
     this.showAll = !this.showAll;
+  }
+
+  // 🔴 Vérifier si une pollution est en favori
+  isFavorite(pollutionId: string): boolean {
+    try {
+      const favs = this.favorites();
+      if (!Array.isArray(favs)) {
+        console.warn('⚠️ favorites is not an array');
+        return false;
+      }
+      return favs.some(p => p.id === pollutionId);
+    } catch (error) {
+      console.error('❌ Erreur dans isFavorite:', error);
+      return false;
+    }
+  }
+
+  // ❤️ Ajouter/Retirer un favori
+  toggleFavorite(pollution: Pollution, event: Event) {
+    event.stopPropagation(); // Empêcher la propagation du clic
+    console.log('Toggle favori pour:', pollution.id);
+    
+    if (this.isFavorite(pollution.id)) {
+      console.log('Retirer des favoris');
+      this.store.dispatch(new RemoveFavorite({ pollutionId: pollution.id }));
+    } else {
+      console.log('Ajouter aux favoris');
+      this.store.dispatch(new AddFavorite(pollution));
+    }
   }
 
 

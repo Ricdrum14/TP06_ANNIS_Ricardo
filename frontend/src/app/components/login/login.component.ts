@@ -1,8 +1,12 @@
-import { Component } from '@angular/core';
+import { Component, inject, Signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
-import { UtilisateurService } from '../../services/utilisateur.service';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { Store } from '@ngxs/store';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { Login } from '../../../actions/auth-actions';
+import { AuthState } from '../../../shared/states/auth-states';
+import { LoadFavoritesFromStorage } from '../../../actions/favorite-actions';
 
 @Component({
   selector: 'app-login',
@@ -11,44 +15,63 @@ import { UtilisateurService } from '../../services/utilisateur.service';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
+
   email = '';
   password = '';
-  isLoading = false;
   formSubmitted = false;
 
-  constructor(
-    private utilisateurService: UtilisateurService,
-    private router: Router
-  ) {}
+  private store = inject(Store);
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
 
-  /** 🔑 Connexion de l’utilisateur */
+  redirectUrl: string | null = null;
+
+  isLoading: Signal<boolean> = toSignal(
+    this.store.select(AuthState.isLoading), { initialValue: false }
+  );
+
+  error: Signal<string | null> = toSignal(
+    this.store.select(AuthState.error), { initialValue: null }
+  );
+
+  isConnected: Signal<boolean> = toSignal(
+    this.store.select(AuthState.isConnected), { initialValue: false }
+  );
+
+  ngOnInit() {
+    this.redirectUrl = this.route.snapshot.queryParamMap.get('redirect');
+
+    if (this.isConnected()) {
+      this.router.navigate([this.redirectUrl || '/']);
+    }
+  }
+
   onLogin() {
     this.formSubmitted = true;
 
-    // Validation manuelle
     if (!this.email || !this.password) {
       alert('Veuillez remplir tous les champs.');
       return;
     }
+
     if (this.password.length < 6) {
       alert('Le mot de passe doit contenir au moins 6 caractères.');
       return;
     }
 
-    this.isLoading = true;
+    this.store.dispatch(new Login({ email: this.email, password: this.password }))
+      .subscribe(() => {
 
-    this.utilisateurService.login(this.email, this.password).subscribe({
-      next: async (user) => {
-        console.log('✅ Utilisateur connecté :', user);
-        this.isLoading = false;
-        await this.router.navigate(['/']);
-      },
-      error: (err) => {
-        console.error('❌ Erreur de connexion :', err);
-        this.isLoading = false;
-        alert('Email ou mot de passe incorrect.');
-      }
-    });
+        if (this.isConnected()) {
+          console.log('Connexion OK ✔');
+
+          // Charger les favoris du bon user
+          this.store.dispatch(new LoadFavoritesFromStorage());
+
+          // Redirection après login
+          this.router.navigate([this.redirectUrl || '/']);
+        }
+      });
   }
 }

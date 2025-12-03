@@ -27,6 +27,11 @@
     </h2>
     <p class="text-center text-gray-500 text-sm">Heureux de vous revoir 🌿</p>
 
+    <!-- 🔹 Message d'erreur -->
+    <div *ngIf="error()" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+      ❌ {{ error() }}
+    </div>
+
     <!-- 🔹 Formulaire -->
     <form (ngSubmit)="onLogin()" class="space-y-4">
       <!-- Email -->
@@ -85,11 +90,11 @@
       <!-- Bouton -->
       <button
         type="submit"
-        [disabled]="isLoading"
+        [disabled]="isLoading()"
         class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-lg font-semibold transition"
         aria-label="Bouton de connexion"
       >
-        {{ isLoading ? 'Connexion...' : 'Se connecter' }}
+        {{ isLoading() ? 'Connexion...' : 'Se connecter' }}
       </button>
     </form>
 

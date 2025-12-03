@@ -28,20 +28,29 @@
     <div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10">
       <div
         *ngFor="let pollution of (showAll ? pollutions : pollutions.slice(0, maxVisible))"
-        class="bg-white rounded-2xl shadow-md hover:shadow-xl transition-shadow duration-300 overflow-hidden group"
+        class="bg-white rounded-2xl shadow-md hover:shadow-xl transition-shadow duration-300 overflow-hidden group relative"
       >
         <!-- Image -->
         <div class="relative">
           <img
             [src]="pollution.photo"
             [alt]="pollution.titre"
-            [title]="'Photo de la pollution : ' + pollution.titre"
+            title="Photo de pollution"
             class="w-full h-40 object-cover group-hover:scale-105 transition-transform duration-500"
             onerror="this.src='assets/images/default-pollution.jpg'; this.onerror=null;"
           />
           <div
             class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
           ></div>
+
+          <!-- ❤️ Bouton Favori (haut-droit) -->
+          <button
+            (click)="toggleFavorite(pollution, $event)"
+            class="absolute top-3 right-3 bg-white/80 hover:bg-white rounded-full p-2 shadow-md hover:shadow-lg transition-all duration-200 z-10"
+            [title]="isFavorite(pollution.id) ? 'Retirer des favoris' : 'Ajouter aux favoris'"
+          >
+            <span class="text-2xl">{{ isFavorite(pollution.id) ? '❤️' : '🤍' }}</span>
+          </button>
         </div>
 
         <!-- Contenu -->
@@ -78,7 +87,7 @@
     </div>
 
     <!-- ✅ Bouton "Voir plus / moins" -->
-    <div *ngIf="pollutions.length > maxVisible" class="text-center mt-10">
+    <div *ngIf="(filteredPollutions$ | async)?.length! > maxVisible" class="text-center mt-10">
       <button
         (click)="toggleView()"
         class="bg-indigo-600 text-white px-6 py-2 rounded-lg shadow hover:bg-indigo-700 transition"

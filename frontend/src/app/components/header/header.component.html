@@ -37,7 +37,7 @@
 
        <button
         type="button"
-        class="h bg-transparent over:text-gray-200 text-lg font-medium transition cursor-pointer"
+        class="text-white bg-transparent hover:text-gray-200 text-lg font-medium transition cursor-pointer"
         (click)="declarePollution()"
         [class.active-action]="declareActive"
       >
@@ -60,68 +60,20 @@
         Statistiques
       </a>
 
-      <!-- Si connecté -->
-      <div *ngIf="user; else notLogged" class="relative ml-3" (keydown.escape)="isMenuOpen = false">
-        <div
-          class="flex items-center gap-3 bg-white/15 px-5 py-2 rounded-full backdrop-blur-md shadow-sm border border-white/30 cursor-pointer select-none hover:bg-white/25 transition"
-          (click)="toggleMenu()"
-        >
-          <img
-            [src]="'https://api.dicebear.com/8.x/initials/svg?seed=' + user.prenom + ' ' + user.nom"
-            alt="Avatar"
-            class="w-9 h-9 rounded-full border border-white shadow-sm flex-shrink-0"
-          />
-          <span class="text-white font-medium text-sm tracking-wide">
-            {{ user.prenom }} {{ user.nom }}
-          </span>
-          <svg
-            class="w-4 h-4 text-white transition-transform duration-200"
-            [ngClass]="{ 'rotate-180': isMenuOpen }"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-          </svg>
-        </div>
+      <!-- ❤️ Badge Favoris -->
+      <button
+        (click)="goToFavorites()"
+        class="relative flex items-center gap-2 px-4 py-2 rounded-lg bg-white/20 hover:bg-white/30 text-white font-medium transition-all duration-200"
+        title="Voir mes favoris"
+      >
+        <span class="text-2xl">❤️</span>
+        <span *ngIf="favoritesCount() > 0" class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+          {{ favoritesCount() }}
+        </span>
+      </button>
 
-        <!-- Menu déroulant -->
-        <div
-          *ngIf="isMenuOpen"
-          class="absolute right-0 mt-3 w-48 bg-white rounded-xl shadow-xl border border-gray-200 z-50 origin-top-right animate-fadeIn"
-        >
-          <div class="absolute -top-2 right-6 w-3 h-3 bg-white rotate-45 border-l border-t border-gray-200"></div>
-
-          <a
-              routerLink="/profil"
-              (click)="isMenuOpen = false"
-              class="menu-link account px-4 py-2 rounded-t-xl"
-            >
-              <img src="assets/images/connecte.svg" alt="Icône utilisateur connecté" class="w-5 h-5" />
-              <span>Mon compte</span>
-            </a>
-
-            <button
-              (click)="logout(); isMenuOpen = false"
-              class="menu-link logout w-full text-left px-4 py-2 rounded-b-xl"
-            >
-              <img src="assets/images/deconnecte.svg" alt="Icône déconnexion" class="w-5 h-5" />
-              <span>Déconnexion</span>
-            </button>
-
-        </div>
-      </div>
-
-      <!-- Si pas connecté -->
-      <ng-template #notLogged>
-        <button
-          (click)="goLogin()"
-          class="btn-login"
-        >
-          Se Connecter
-        </button>
-      </ng-template>
+      <!-- 🔐 Composant Connexion -->
+      <app-connexion></app-connexion>
     </nav>
   </div>
 
@@ -141,14 +93,14 @@
         Accueil
       </a>
 
-     <button
+      <button
         type="button"
         (click)="declarePollution()"
         class="text-white hover:text-gray-200 font-medium transition cursor-pointer"
         [class.active-action]="declareActive"
       >
         Déclarer
-    </button>
+      </button>
 
       <a
         routerLink="/carte"
@@ -166,46 +118,20 @@
         Statistiques
       </a>
 
-      <div *ngIf="user; else mobileLogin" class="flex flex-col items-center gap-3 mt-3">
-        <img
-          [src]="'https://api.dicebear.com/8.x/initials/svg?seed=' + user.prenom"
-          alt="Avatar"
-          class="w-12 h-12 rounded-full border border-white shadow-md"
-        />
-        <p class="text-sm text-gray-100 font-medium uppercase tracking-wide">
-          {{ user.prenom }} {{ user.nom }}
-        </p>
+      <!-- ❤️ Badge Favoris (Mobile) -->
+      <button
+        (click)="goToFavorites()"
+        class="relative flex items-center gap-2 px-4 py-2 rounded-lg bg-white/20 hover:bg-white/30 text-white font-medium transition-all duration-200"
+        title="Voir mes favoris"
+      >
+        <span class="text-2xl">❤️</span>
+        <span *ngIf="favoritesCount() > 0" class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+          {{ favoritesCount() }}
+        </span>
+      </button>
 
-        <a
-          routerLink="/profil"
-          (click)="isMenuOpen = false"
-          class="bg-white text-indigo-700 font-semibold px-5 py-2 rounded-lg shadow hover:bg-gray-100 transition w-40 text-center"
-        >
-          Mon compte
-        </a>
-
-        <button
-          (click)="logout()"
-          class="bg-red-500 hover:bg-red-600 text-white font-semibold px-5 py-2 rounded-lg shadow transition w-40"
-        >
-          Déconnexion
-        </button>
-      </div>
-
-      <ng-template #mobileLogin>
-        <button
-          (click)="goLogin()"
-          class="bg-white text-indigo-700 font-semibold px-5 py-2 rounded-lg shadow hover:bg-gray-100 transition w-40"
-        >
-          Se Connecter
-        </button>
-        <button
-          (click)="goSignup()"
-          class="text-white/90 hover:text-white underline underline-offset-4"
-        >
-          Créer un compte
-        </button>
-      </ng-template>
+      <!-- 🔐 Composant Connexion (mobile) -->
+      <app-connexion></app-connexion>
     </nav>
   </div>
 </header>

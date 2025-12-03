@@ -1,0 +1,9 @@
+/* Styles pour les favoris */
+
+.favorite-icon-filled {
+  filter: invert(24%) sepia(96%) saturate(1482%) hue-rotate(357deg) brightness(104%) contrast(104%);
+}
+
+.favorite-icon-empty {
+  filter: brightness(0.4);
+}

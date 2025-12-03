@@ -1,0 +1,47 @@
+/* 🔵 Mon compte - Bleu */
+.menu-link.account span {
+  color: #4F46E5;
+  font-weight: 600;
+}
+
+.menu-link.account:hover {
+  background-color: #EEF2FF;
+  color: #4338CA;
+}
+
+/* 🔴 Déconnexion - Rouge */
+.menu-link.logout {
+  border: none;
+  background: transparent;
+}
+
+.menu-link.logout span {
+  color: #DC2626;
+  font-weight: 600;
+}
+
+.menu-link.logout:hover {
+  background-color: #FEF2F2;
+  color: #B91C1C;
+}
+
+/* 🔘 Bouton Se connecter */
+.btn-login {
+  background-color: white;
+  color: #2563eb;
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-login:hover {
+  background-color: #f0f9ff;
+  color: #1e3a8a;
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 0 15px rgba(59, 130, 246, 0.7),
+              0 0 30px rgba(59, 130, 246, 0.4);
+}
